@@ -1,28 +1,25 @@
 <?php
+require_once('setup.php');
 
 $output = [
     'success' => false
 ];
 
-require_once('mysql-connect.php');
+$query = "SELECT `id`, `name`, `email` FROM `users`";
 
-if(empty($output['error'])){
-    $query = "SELECT `id`, `name`, `email` FROM `users`";
+$result = $conn->query($query);
 
-    $result = mysqli_query($conn, $query);
-
-    if($result){
-        $output['success'] = true;
-        if(mysqli_num_rows($result)){
-            while($row = mysqli_fetch_assoc($result)){
-                $output['users'][] = $row;
-            }
-        } else {
-            $output['users'] = [];
+if($result){
+    $output['success'] = true;
+    if($result->num_rows){
+        while($row = $result->fetch_assoc()){
+            $output['users'][] = $row;
         }
     } else {
-        $output['error'] = 'Error getting data';
+        $output['users'] = [];
     }
+} else {
+    $output['error'] = 'Error getting data';
 }
 
 print json_encode($output);
